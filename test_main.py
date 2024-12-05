@@ -59,6 +59,7 @@ class TestRegistroUsuario(unittest.TestCase):
         'Calle', 'teléfono', 'contraseña', 'contraseña'
     ])'''
         pass
+        
     def test_fallo_por_datos_invalidos(self, mock_inputs):
        ''' # Capturar la salida
         captured_output = StringIO()
