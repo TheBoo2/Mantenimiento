@@ -24,23 +24,28 @@ def registrar_usuario(archivo_usuarios="usuarios.csv"):
     contraseña = input("Contraseña: ").strip()
     confirmacion_contraseña = input("Confirmar contraseña: ").strip()
 
-    if contraseña != confirmacion_contraseña:
-        print(f"\n{MSG_ERROR_CONTRASEÑAS_NO_COINCIDEN}")
-        return
-
+    # Validar que todos los campos estén llenos
     if not all([nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono, contraseña]):
-        print(f"\n{MSG_ERROR_CAMPOS_OBLIGATORIOS}")
+        print("\nError: Todos los campos son obligatorios. Por favor, complete todos los datos.")
         return
 
+    # Validar que la cédula no esté ya registrada
+    if verificar_cedula_duplicada(cedula, archivo_usuarios):
+        print("\nError: Esta cédula ya se encuentra registrada en el sistema.")
+        return
+
+    # Validar que las contraseñas coincidan
+    if contraseña != confirmacion_contraseña:
+        print("\nError: Las contraseñas no coinciden. Intente nuevamente.")
+        return
+
+    # Validar los datos ingresados
     if not validar_datos(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono):
         return
 
-    if verificar_cedula_duplicada(cedula, archivo_usuarios):
-        print(f"\n{MSG_ERROR_CEDULA_DUPLICADA}")
-        return
-
+    # Guardar los datos del usuario
     guardar_usuario(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono, contraseña, archivo_usuarios)
-    print(f"\n{MSG_REGISTRO_EXITOSO}")
+    print("\nRegistro exitoso. ¡Bienvenido al sistema!")
 
 def validar_datos(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono):
     if not nombre.isalpha() or not apellido.isalpha():
