@@ -8,7 +8,7 @@ from io import StringIO
 import Main
 
 class TestRegistroUsuario(unittest.TestCase):
-
+    
     def setUp(self):
         # Eliminar el archivo usuarios.csv antes de cada prueba
         if os.path.exists('usuarios.csv'):
