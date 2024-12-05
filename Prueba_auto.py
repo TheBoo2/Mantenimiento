@@ -43,17 +43,21 @@ class TestRegistroUsuario(unittest.TestCase):
             contenido = f.readlines()
             self.assertEqual(len(contenido), 1)
 
-    @patch('builtins.input', side_effect=[
-        '', 'Perez', 'abc', '32/13/1990', 'Calle', 'teléfono', 'contraseña', 'contraseña'
-    ])
-    def test_fallo_por_datos_invalidos(self, mock_inputs):
-        captured_output = StringIO()
-        sys.stdout = captured_output
-        Main.registrar_usuario()
-        sys.stdout = sys.__stdout__
+@patch('builtins.input', side_effect=[
+    '', 'Perez', 'abc', '32/13/1990',
+    'Calle', 'teléfono', 'contraseña', 'contraseña'
+])
+def test_fallo_por_datos_invalidos(self, mock_inputs):
+    # Capturar la salida
+    captured_output = StringIO()
+    sys.stdout = captured_output  # Redirigir stdout
+    Main.registrar_usuario()
+    sys.stdout = sys.__stdout__  # Restaurar stdout
 
-        output = captured_output.getvalue().strip()
-        self.assertIn('Error: Esta cédula ya se encuentra registrada en el sistema.', output)
+    output = captured_output.getvalue().strip()
+    # Cambiar la expectativa del mensaje a lo que realmente debería suceder
+    self.assertIn('Error: Todos los campos son obligatorios. Por favor, complete todos los datos.', output)
+
         if os.path.exists('usuarios.csv'):
             with open('usuarios.csv', 'r', encoding='utf-8') as f:
                 contenido = f.read()
