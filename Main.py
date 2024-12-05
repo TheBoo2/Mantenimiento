@@ -1,12 +1,19 @@
-# Main.py
 import re
 import datetime
 import os
 import csv
 import hashlib
 
+# Constantes para mensajes
+MSG_ERROR_CAMPOS_OBLIGATORIOS = "Error: Todos los campos son obligatorios. Por favor, complete todos los datos."
+MSG_ERROR_CEDULA_DUPLICADA = "Error: Esta cédula ya se encuentra registrada en el sistema."
+MSG_ERROR_FORMATO_FECHA = "Error: La fecha de nacimiento no tiene el formato correcto (DD/MM/AAAA)."
+MSG_ERROR_NOMBRE_APELLIDO = "Error: El nombre y apellido solo deben contener letras."
+MSG_ERROR_TELEFONO = "Error: El teléfono debe contener solo números."
+MSG_ERROR_CONTRASEÑAS_NO_COINCIDEN = "Error: Las contraseñas no coinciden. Intente nuevamente."
+MSG_REGISTRO_EXITOSO = "Registro exitoso. ¡Bienvenido al sistema!"
 
-def registrar_usuario():
+def registrar_usuario(archivo_usuarios="usuarios.csv"):
     print("\nPor favor, ingrese los siguientes datos para registrarse:")
     nombre = input("Nombre: ").strip()
     apellido = input("Apellido: ").strip()
@@ -17,56 +24,43 @@ def registrar_usuario():
     contraseña = input("Contraseña: ").strip()
     confirmacion_contraseña = input("Confirmar contraseña: ").strip()
 
-    # Validar que las contraseñas coincidan
     if contraseña != confirmacion_contraseña:
-        print("\nError: Las contraseñas no coinciden. Intente nuevamente.")
+        print(f"\n{MSG_ERROR_CONTRASEÑAS_NO_COINCIDEN}")
         return
 
-    # Validar que todos los campos estén llenos
     if not all([nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono, contraseña]):
-        print("\nError: Todos los campos son obligatorios. Por favor, complete todos los datos.")
+        print(f"\n{MSG_ERROR_CAMPOS_OBLIGATORIOS}")
         return
 
-    # Validar los datos ingresados
     if not validar_datos(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono):
         return
 
-    # Validar que la cédula no esté ya registrada
-    if verificar_cedula_duplicada(cedula):
-        print("\nError: Esta cédula ya se encuentra registrada en el sistema.")
+    if verificar_cedula_duplicada(cedula, archivo_usuarios):
+        print(f"\n{MSG_ERROR_CEDULA_DUPLICADA}")
         return
 
-    # Guardar los datos del usuario
-    guardar_usuario(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono, contraseña)
-    print("\nRegistro exitoso. ¡Bienvenido al sistema!")
+    guardar_usuario(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono, contraseña, archivo_usuarios)
+    print(f"\n{MSG_REGISTRO_EXITOSO}")
 
 def validar_datos(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono):
-    # Validar que el nombre y apellido solo contengan letras
-    if not nombre.isalpha():
-        print("\nError: El nombre solo debe contener letras.")
-        return False
-    if not apellido.isalpha():
-        print("\nError: El apellido solo debe contener letras.")
+    if not nombre.isalpha() or not apellido.isalpha():
+        print(f"\n{MSG_ERROR_NOMBRE_APELLIDO}")
         return False
 
-    # Validar que la cédula sea numérica
     if not cedula.isdigit():
         print("\nError: La cédula debe contener solo números.")
         return False
 
-    # Validar formato de fecha
     try:
         datetime.datetime.strptime(fecha_nacimiento, "%d/%m/%Y")
     except ValueError:
-        print("\nError: La fecha de nacimiento no tiene el formato correcto (DD/MM/AAAA).")
+        print(f"\n{MSG_ERROR_FORMATO_FECHA}")
         return False
 
-    # Validar que el teléfono sea numérico
     if not telefono.isdigit():
-        print("\nError: El teléfono debe contener solo números.")
+        print(f"\n{MSG_ERROR_TELEFONO}")
         return False
 
-    # Validar longitud mínima del domicilio
     if len(domicilio) < 5:
         print("\nError: El domicilio es demasiado corto.")
         return False
@@ -75,17 +69,16 @@ def validar_datos(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefon
 
 def verificar_cedula_duplicada(cedula, archivo_usuarios="usuarios.csv"):
     if not os.path.exists(archivo_usuarios):
-        return False  # No hay usuarios registrados aún
+        return False
 
     with open(archivo_usuarios, "r", newline='', encoding='utf-8') as archivo:
         lector = csv.reader(archivo)
         for fila in lector:
             if fila and fila[2] == cedula:
-                return True  # Cédula duplicada
+                return True
     return False
 
 def guardar_usuario(nombre, apellido, cedula, fecha_nacimiento, domicilio, telefono, contraseña, archivo_usuarios="usuarios.csv"):
-    # Encriptar la contraseña
     contraseña_encriptada = hashlib.sha256(contraseña.encode()).hexdigest()
 
     with open(archivo_usuarios, "a", newline='', encoding='utf-8') as archivo:
