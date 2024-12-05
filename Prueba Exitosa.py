@@ -1,5 +1,5 @@
 import unittest
-from test_Main import TestRegistroUsuario
+from test_main import TestRegistroUsuario
 
 # Crear y ejecutar un test específico
 if __name__ == "__main__":
