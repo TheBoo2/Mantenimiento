@@ -56,7 +56,7 @@ class TestRegistroUsuario(unittest.TestCase):
 
     @patch('builtins.input', side_effect=[
         '', 'Perez', 'abc', '32/13/1990',
-        'Calle', 'teléfono', 'contraseña', 'otra'
+        'Calle', 'teléfono', 'contraseña', 'contraseña'
     ])
     def test_fallo_por_datos_invalidos(self, mock_inputs):
         # Capturar la salida
@@ -66,7 +66,7 @@ class TestRegistroUsuario(unittest.TestCase):
         sys.stdout = sys.__stdout__  # Restaurar stdout
 
         output = captured_output.getvalue()
-        self.assertIn('Error: Todos los campos son obligatorios', output)
+        self.assertIn('Error: Esta cédula ya se encuentra registrada en el sistema.', output)
 
         # Verificar que el archivo no se haya creado o esté vacío
         if os.path.exists('usuarios.csv'):
