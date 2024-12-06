@@ -28,4 +28,5 @@ jobs:
 
       - name: Run specific tests
         run: |
-          python -m unittest test_main.TestRegistroUsuario.test_registro_exitoso
+           python -m unittest test_main.TestRegistroUsuario.test_fallo_por_duplicidad test_main.TestRegistroUsuario.test_fallo_por_datos_invalidos
+
